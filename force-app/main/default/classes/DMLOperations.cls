@@ -17,7 +17,7 @@
  * The methods within this class serve as practical examples of different DML operations,
  * allowing developers to learn through practice and examples.
  *
- * @author Your Name
+ * @author Michael Kent
  */
 
 
@@ -31,13 +31,16 @@ public with sharing class DMLOperations {
      */
     public static Id insertNewAccount() {
         // Create a new Account instance
-
+        Account newAccount = new Account();
         // Set some fields on the Account
-
-        // Insert the Account into the database
+        newAccount.name = 'Test Account ' + Datetime.now().format();
+        newAccount.industry = 'Technology';
+        newAccount.active__c = 'Yes';
+     // Insert the Account into the database
+        Insert newAccount;
 
         // Return the Id of the newly created Account
-        return null;
+        return newAccount.id;
     }
 
     /**
