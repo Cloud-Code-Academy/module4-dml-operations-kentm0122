@@ -17,7 +17,7 @@
  * The methods within this class serve as practical examples of different DML operations,
  * allowing developers to learn through practice and examples.
  *
- * @author Your Name
+ * @author Michael Kent
  */
 
 
@@ -31,13 +31,16 @@ public with sharing class DMLOperations {
      */
     public static Id insertNewAccount() {
         // Create a new Account instance
-
+        Account newAccount = new Account();
         // Set some fields on the Account
-
-        // Insert the Account into the database
+        newAccount.name = 'Test Account ' + Datetime.now().format();
+        newAccount.industry = 'Technology';
+        newAccount.active__c = 'Yes';
+     // Insert the Account into the database
+        Insert newAccount;
 
         // Return the Id of the newly created Account
-        return null;
+        return newAccount.id;
     }
 
     /**
@@ -48,8 +51,9 @@ public with sharing class DMLOperations {
      */
     public static void createAccount(String name, String industry) {
         // Create a new Account and set the fields inline
-
+        Account newAccount = new Account(name = name,industry = industry);
         // Insert the Account
+        Insert newAccount;
     }
 
     
@@ -61,14 +65,17 @@ public with sharing class DMLOperations {
      */
     public static Id insertNewContact(Id accountId) {
         // Create a new Contact instance
-
+        Contact newContact = new Contact();
         // Set some fields on the Contact
+        newContact.FirstName = 'Michael';
+        newContact.LastName = 'Kent';
+        newContact.Email = 'kentm122@outlook.com';
         // Set the AccountId field to the given accountId
-
+        newContact.AccountId = accountId;
         // Insert the Contact into the database
-
+        Insert newContact;
         // Return the Id of the newly created Contact
-        return null;
+        return newContact.Id;
     }
 
     /**
@@ -81,10 +88,11 @@ public with sharing class DMLOperations {
     public static void updateContactLastName(Id contactId, String newLastName) {
         // Retrieve the Contact from the database
         // [SELECT Id FROM Contact WHERE Id = :contactId]
-
+        Contact contactToUpdate = [SELECT Id FROM CONTACT WHERE ID = :contactId]; 
         // Update the Contact's last name
-
+        contactToUpdate.LastName = newLastName;
         // Update the Contact in the database
+        Update contactToUpdate;
     }
 
     /**
@@ -97,10 +105,11 @@ public with sharing class DMLOperations {
     public static void updateOpportunityStage(Id oppId, String newStage) {
         // Retrieve the Opportunity from the database
         // [SELECT Id FROM Opportunity WHERE Id = :oppId]
-
+        Opportunity oppToUpdate = [SELECT Id FROM OPPORTUNITY WHERE ID = :oppId];
         // Update the Opportunity's stage
-
+        oppToUpdate.StageName = newStage;
         // Update the Opportunity in the database
+        Update oppToUpdate;
     }
 
     /**
