@@ -205,15 +205,24 @@ public with sharing class DMLOperations {
 	 * @return The Account that was upserted.
 	 */
 	public static Account upsertAccount(String accountName) {
+        Account accToUpdate;
 		// Query for the Account
 		List<Account> accounts = [SELECT Id FROM Account WHERE Name = :accountName];
 
 		// if the Account exists, update the description
-
-		// otherwise, create a new Account and set the description
-
+        if (!accounts.isEmpty()) {
+            accToUpdate = accounts[0];
+            accToUpdate.Description = 'Updated Account';
+        } else {
+            // otherwise, create a new Account and set the description
+            Account newAccount = new Account();
+            newAccount.Name = accountName;
+            newAccount.Description = 'New Account';
+            accToUpdate = newAccount;
+        }
 		// Upsert the Account
-		return null;
+        upsert accToUpdate;
+		return accToUpdate;
 	}
 
     /**
@@ -226,17 +235,32 @@ public with sharing class DMLOperations {
 	 * @param contactsToUpsert List of Contacts to be upserted and linked to accounts.
 	 */
 	public static void upsertAccountsWithContacts(List<Contact> contactsToUpsert) {
+        list<String> contactLastname = new List<String>();
 		// Loop through each Contact
-
-		// Extract the Account Name from Contact's LastName
-
-		// Get the account based on the name or create one if it doesn't exist
-
+        for(Contact currContact : contactsToUpsert) {
+            contactLastname.add(currContact.LastName);
+        }
+        // Query for Account Id based on Contact's lastname
+        // Extract the Account Name from Contact's LastName
+        map<String, Account> existingAccountsMap = new map<string, Account>();
+        List<Account> existingAccountList = [SELECT Id,Name FROM Account WHERE Name IN :contactLastname];
+        for (Account currAcc : existingAccountList) {
+            existingAccountsMap.put(currAcc.Name, currAcc);
+        }
+       // Get the account based on the name or create one if it doesn't exist
+        for (String currContact : contactLastname) {
+            if (existingAccountsMap.get(currContact) == null) {
+                Account newAccount = upsertAccount(currContact);
+                existingAccountsMap.put(currContact, newAccount);
+            }
+        }
 		// Link the Contact to its Account using the Account Id
-
+        for(Contact currContact : contactsToUpsert) {
+            currContact.AccountId = existingAccountsMap.get(currContact.LastName).Id;
+        }
 		// Upsert the Contacts
-	}
-
+         upsert contactsToUpsert;
+    }
     /**
      * Question 11
      * Insert a list of Leads and then deletes them.
