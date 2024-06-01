@@ -33,7 +33,7 @@ public with sharing class DMLOperations {
         // Create a new Account instance
         Account newAccount = new Account();
         // Set some fields on the Account
-        newAccount.name = 'Test Account ' + Datetime.now().format();
+        newAccount.name = 'Test Account';
         newAccount.industry = 'Technology';
         newAccount.active__c = 'Yes';
      // Insert the Account into the database
@@ -123,8 +123,12 @@ public with sharing class DMLOperations {
     public static void updateAccountFields(Id accountId, String newName, String newIndustry) {
         // Query the account
         // [SELECT Id FROM Account WHERE Id = :accountId]
-
+        Account accToUpdate = [SELECT Id FROM ACCOUNT WHERE Id = :accountId];
         // Update the Account with the given Id with the new name and industry
+        accToUpdate.Name = newName;
+        accToUpdate.Industry = newIndustry;
+        // Update the Account in the database
+        Update accToUpdate;
     }
 
 
@@ -141,9 +145,14 @@ public with sharing class DMLOperations {
             // Set the Opportunity's Stage to Qualification
             // Set the Opportunity's Close Date to 3 months from today
             // Set the Opportunity's Amount to 50000
+            for(Opportunity currOpp : opportunities) {
+                currOpp.StageName = 'Qualification';
+                currOpp.CloseDate = date.today().addMonths(3);
+                currOpp.Amount = 50000;
+        }
         // Upsert the opportunities List so that records are either updated or created
+        upsert opportunities;
     }
-
     /**
      * Question 8
      * Insert or updates opportunities from list of names.
@@ -153,11 +162,40 @@ public with sharing class DMLOperations {
      * @param oppNames The list of Opportunity names.
      */
     public static void upsertOpportunities(String accountName, List<String> oppNames) {
-        // Loop through each Opportunity name
-            // Create an Opportunity with the given name
-            // Add the Opportunity to the list
-    }
-    
+        Account oppAccount;
+        List<ACCOUNT> Accounts = [SELECT Id, Name FROM ACCOUNT WHERE Name = :accountName LIMIT 1];
+        if (Accounts.isEmpty()) {
+            Account newAccount = new Account();
+            newAccount.Name = accountName;
+            Insert newAccount;
+            oppAccount = newAccount;
+        } Else {
+             oppAccount = Accounts[0];
+        }
+        Map<String, Opportunity> existingOppsMap = new Map<String, Opportunity>();
+        List<Opportunity> existingOppsList = [SELECT Id, Name FROM Opportunity WHERE Name IN :oppNames];
+        for(Opportunity currOpp : existingOppsList) {
+            existingOppsMap.put(currOpp.Name, currOpp);
+        }
+        List<Opportunity> oppstoUpsert = new List<Opportunity>();
+        for (String currName : oppNames) {
+            Opportunity singleOpp;
+            if (existingOppsMap.containsKey(currName)) {
+                singleOpp = existingOppsMap.get(currName);
+                SingleOpp.AccountId = oppAccount.Id;
+            } else {
+                singleOpp = new Opportunity();
+                singleOpp.Name = currName;
+                singleOpp.StageName = 'Qualification';
+                singleOpp.CloseDate = date.today().addMonths(3);
+                singleOpp.Amount = 50000;
+                singleOpp.AccountId = oppAccount.Id;
+            }
+            oppstoUpsert.add(singleOpp);
+        }
+        
+        upsert oppstoUpsert;
+    }  
     /**
      * Question 9
 	 * Upserts an Account with the specified name.
