@@ -309,5 +309,6 @@ public with sharing class DMLOperations {
         insert newCasesList;
         // Delete the cases
         delete newCasesList;
+    
     }
 }
