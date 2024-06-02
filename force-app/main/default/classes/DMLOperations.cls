@@ -267,11 +267,26 @@ public with sharing class DMLOperations {
      * @param leadNames The list of Lead names to be inserted.
      */
     public static void insertAndDeleteLeads(List<String> leadNames) {
+        list<Lead> leadsToInsert = new List<Lead>();
+        String firstName;
+        String lastName;
         // Loop through each Lead name
-
+        for (String currLead : leadNames) {
+            list<String> splitName = currLead.split(' ',2);
+            firstName = splitName[0];
+            lastName = splitName[1];
+            Lead newLead = new Lead();
+            newlead.FirstName = firstName;
+            newlead.LastName = lastName;
+            newLead.Status = 'Open - Not Contacted';
+            newLead.Company = 'My Company';
+            leadsToInsert.add(newLead);
+            
+        }
         // Insert the Leads
-
+        insert leadsToInsert;
         // Delete the Leads
+        delete leadsToInsert;
     }
 
 
@@ -282,8 +297,17 @@ public with sharing class DMLOperations {
      * @param numOfCases The number of cases to create.
      */
     public static void createAndDeleteCases(String accountId, Integer numOfCases) {
+        list<Case> newCasesList = new list<case>();
+        for (Integer i = 0; i < numOfCases; i++) {
+            Case newCase = new Case();
+            newCase.accountId = accountId;
+            newCase.subject = 'testcase' + i;
+            newcase.Origin = 'Web';
+            newCasesList.add(newCase);
+        } 
         // Insert the cases
-
+        insert newCasesList;
         // Delete the cases
+        delete newCasesList;
     }
 }
