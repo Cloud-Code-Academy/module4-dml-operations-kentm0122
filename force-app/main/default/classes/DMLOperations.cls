@@ -163,13 +163,13 @@ public with sharing class DMLOperations {
      */
     public static void upsertOpportunities(String accountName, List<String> oppNames) {
         Account oppAccount;
-        List<ACCOUNT> Accounts = [SELECT Id, Name FROM ACCOUNT WHERE Name = :accountName LIMIT 1];
+        List<ACCOUNT> Accounts = [SELECT Id FROM ACCOUNT WHERE Name = :accountName LIMIT 1];
         if (Accounts.isEmpty()) {
             Account newAccount = new Account();
             newAccount.Name = accountName;
             Insert newAccount;
             oppAccount = newAccount;
-        } Else {
+        } else {
              oppAccount = Accounts[0];
         }
         Map<String, Opportunity> existingOppsMap = new Map<String, Opportunity>();
@@ -243,7 +243,7 @@ public with sharing class DMLOperations {
         // Query for Account Id based on Contact's lastname
         // Extract the Account Name from Contact's LastName
         map<String, Account> existingAccountsMap = new map<string, Account>();
-        List<Account> existingAccountList = [SELECT Id,Name FROM Account WHERE Name IN :contactLastname];
+        List<Account> existingAccountList = [SELECT Id, Name FROM Account WHERE Name IN :contactLastname];
         for (Account currAcc : existingAccountList) {
             existingAccountsMap.put(currAcc.Name, currAcc);
         }
