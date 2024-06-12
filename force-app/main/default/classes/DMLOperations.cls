@@ -35,7 +35,6 @@ public with sharing class DMLOperations {
         // Set some fields on the Account
         newAccount.name = 'Test Account';
         newAccount.industry = 'Technology';
-        newAccount.active__c = 'Yes';
      // Insert the Account into the database
         Insert newAccount;
 
