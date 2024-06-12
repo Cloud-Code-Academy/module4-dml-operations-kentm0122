@@ -162,7 +162,7 @@ public with sharing class DMLOperations {
      */
     public static void upsertOpportunities(String accountName, List<String> oppNames) {
         Account oppAccount;
-        List<ACCOUNT> Accounts = [SELECT Id FROM ACCOUNT WHERE Name = :accountName LIMIT 1];
+        List<ACCOUNT> accounts = [SELECT Id FROM ACCOUNT WHERE Name = :accountName LIMIT 1];
         if (Accounts.isEmpty()) {
             Account newAccount = new Account();
             newAccount.Name = accountName;
